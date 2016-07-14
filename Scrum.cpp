@@ -20,13 +20,16 @@ int main(int argc, char* argv[])
 		{
 			printf("Error: cannot open file\n");
 			return -1;
+			fclose(fp);
 		}
+		fclose(fp);
 	}
 	else
 	{ 
 		printf("Error: empty file name\n");
 		return -2;
 	}
+
 
 	IplImage* image = 0;
 	IplImage* src = 0;
