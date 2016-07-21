@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <cstdio>
 #include <unistd.h>
 #include <cv.h>
 #include <highgui.h>
@@ -39,36 +40,51 @@ void set_status(const char *img_name, const char *dir, RGB dev, const char *stat
 	IplImage* src = 0;
 
 	image = cvLoadImage(img_name, 1);
+	
 	int z = dev.find_objects_edges(image);
-	chdir(dir);
-	for (int i = 0; i < z; i ++)
+	if (z != 0)
 	{
-		FILE *fout;
-		FILE *fin;
+		chdir(dir);
+		for (int i = 0; i < z; i ++)
+		{
+			FILE *fout;
+			FILE *fin;
 
-		char string[400];
-		char zbar[200];
-		int j = 0;
-		fout = fopen("../text", "r");
-		fin = fopen("../status.csv", "a");
-		create_image(image,(char*)img_name, END[i]);
-		sprintf(zbar, "zbarimg %s >../text", img_name);
-		system(zbar);
-		fseek(fout , 8 , SEEK_SET );				//Переносим курсор вперед, чтобы не считывать ненужные символы от zbar'а
-		fgets(string, 200, fout);
+			char string[400];
+			char zbar[200];
+			int j = 0;
+			fout = fopen("../text", "r");
+			fin = fopen("../status.csv", "a");
+			create_image(image,(char*)img_name, END[i]);
+			sprintf(zbar, "zbarimg %s >../text", img_name);
+			system(zbar);
+			fgets(string, 200, fout);
+			if (string[0] == 'Q')
+			{	
+				fseek(fout , 8 , SEEK_SET );				//Переносим курсор вперед, чтобы не считывать ненужные символы от zbar'а
+				fgets(string, 200, fout);
 
-		while(string[j] != '\0')
-			j++;
-		string[j-1] = '\0';					//Убираем перенос строки
-		fputs("Task: ", fin);
-		fputs(string, fin);
-		fputs(status, fin);
-		fputs(developer, fin);
-		
-		strcat(string, ".jpg");
-		create_image(image,(char*)string,END[i]);
-		fclose(fout);
-		fclose(fin);
+				while(string[j] != '\0')
+					j++;
+				string[j-1] = '\0';							//Убираем перенос строки
+				fputs("Task: ", fin);
+				fputs(string, fin);
+				fputs(status, fin);
+				fputs(developer, fin);
+				
+				strcat(string, ".jpg");
+				printf("%s\n", string);
+				create_image(image,(char*)string,END[i]);
+				fclose(fout);
+				fclose(fin);
+			}
+			else printf("Ошибка!\n");
+		}
+		char del[100];
+		sprintf(del, "rm %s",img_name);
+		system(del);
+
+		chdir("..");
 	}
-	chdir("..");
+	else printf("Стикеров не найдено!\n");
 }

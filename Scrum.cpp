@@ -10,6 +10,7 @@ using namespace std;
 
 int main(int argc, char* argv[])
 {
+
 	char *filename;
 	if (argc>1)
 	{
@@ -39,74 +40,72 @@ int main(int argc, char* argv[])
 
 	assert(src != 0);
 
-	RGB pink(255,0,255);
-	RGB red(255,0,0); 		//ptr[3*x];		// B - синий
-	RGB green(0,255,0);		//ptr[3*x+1];	// G - зелёный
-	RGB blue(0,0,255);		//ptr[3*x+2];  	// R - красный
-	RGB yellow(255,255,0);
-
+	RGB pool(100, 40, 25, 30, 15, 25);
+	RGB dev1(45, 115, 65, 15, 35, 25); 		//ptr[3*x];		// B - синий
+	RGB dev2(40, 105, 132, 30, 35, 50);		//ptr[3*x+1];	// G - зелёный
+	RGB dev3(175, 45, 20, 45, 25, 15);		//ptr[3*x+2];  	// R - красный
+	
 	point start;
 	start.x = 0;
 	start.y = 0;
 
-	rect pink_out(start, 0, 0);
-	rect pink_left(start, 0, 0);
-	rect pink_right(start, 0, 0);
+	rect pool_out(start, 0, 0);
+	rect pool_left(start, 0, 0);
+	rect pool_right(start, 0, 0);
 
-	rect red_out(start, 0, 0);
-	rect red_left(start, 0, 0);
-	rect red_right(start, 0, 0);
+	rect dev1_out(start, 0, 0);
+	rect dev1_left(start, 0, 0);
+	rect dev1_right(start, 0, 0);
 
-	rect green_out(start, 0, 0);
-	rect green_left(start, 0, 0);
-	rect green_right(start, 0, 0);
+	rect dev2_out(start, 0, 0);
+	rect dev2_left(start, 0, 0);
+	rect dev2_right(start, 0, 0);
 
-	rect blue_out(start, 0,0);
-	rect blue_left(start, 0, 0);
-	rect blue_right(start, 0, 0);
+	rect dev3_out(start, 0,0);
+	rect dev3_left(start, 0, 0);
+	rect dev3_right(start, 0, 0);
 
-	if (chdir("Red_Zone_Stickers")) system("mkdir Red_Zone_Stickers");
+	if (chdir("dev1_Zone_Stickers")) system("mkdir dev1_Zone_Stickers");
 	else chdir("..");
-	if (chdir("Pink_Zone_Stickers")) system("mkdir Pink_Zone_Stickers");
+	if (chdir("pool_Zone_Stickers")) system("mkdir pool_Zone_Stickers");
 	else chdir("..");
-	if (chdir("Green_Zone_Stickers")) system("mkdir Green_Zone_Stickers");
+	if (chdir("dev2_Zone_Stickers")) system("mkdir dev2_Zone_Stickers");
 	else chdir("..");
-	if (chdir("Blue_Zone_Stickers")) system("mkdir Blue_Zone_Stickers");
+	if (chdir("dev3_Zone_Stickers")) system("mkdir dev3_Zone_Stickers");
 	else chdir("..");
+	pool_out = pool.find_zone_edges(image);
+	
+	dev1_out = dev1.find_zone_edges(image);
+	dev1_left = dev1_out.find_left_part();
+	dev1_right = dev1_out.find_right_part();
 
-	pink_out = pink.find_zone_edges(image);
+	dev2_out = dev2.find_zone_edges(image);
+	dev2_left = dev2_out.find_left_part();
+	dev2_right = dev2_out.find_right_part();
 
-	red_out = red.find_zone_edges(image);
-	red_left = red_out.find_left_part();
-	red_right = red_out.find_right_part();
+	dev3_out = dev3.find_zone_edges(image);
+	dev3_left = dev3_out.find_left_part();
+	dev3_right = dev3_out.find_right_part();
+	
+	create_image(image,(char* )"pool_zone.jpg", pool_out);
+	create_image(image,(char* )"dev1_left_zone.jpg", dev1_left);
+	create_image(image,(char* )"dev1_right_zone.jpg", dev1_right);
 
-	green_out = green.find_zone_edges(image);
-	green_left = green_out.find_left_part();
-	green_right = green_out.find_right_part();
+	create_image(image,(char* )"dev2_left_zone.jpg", dev2_left);
+	create_image(image,(char* )"dev2_right_zone.jpg", dev2_right);
 
-	blue_out = blue.find_zone_edges(image);
-	blue_left = blue_out.find_left_part();
-	blue_right = blue_out.find_right_part();
-
-	create_image(image,(char* )"pink_zone.jpg", pink_out);
-
-	create_image(image,(char* )"red_left_zone.jpg", red_left);
-	create_image(image,(char* )"red_right_zone.jpg", red_right);
-
-	create_image(image,(char* )"green_left_zone.jpg", green_left);
-	create_image(image,(char* )"green_right_zone.jpg", green_right);
-
-	create_image(image,(char* )"blue_left_zone.jpg", blue_left);
-	create_image(image,(char* )"blue_right_zone.jpg", blue_right);
+	create_image(image,(char* )"dev3_left_zone.jpg", dev3_left);
+	
+	create_image(image,(char* )"dev3_right_zone.jpg", dev3_right);
 
 	system("rm status.csv");
-	set_status("red_left_zone.jpg","Red_Zone_Stickers", red, ",Status: in progress", ",Developer: red\n");
-	set_status("pink_zone.jpg", "Pink_Zone_Stickers", pink, ",Status: in pool", ",Developer: none\n");
-	set_status("green_left_zone.jpg", "Green_Zone_Stickers", green, ",Status: in progress,", "Developer: green\n");
-	set_status("blue_left_zone.jpg", "Blue_Zone_Stickers", blue, ",Status: in progress,", "Developer: blue\n");
-	set_status("red_right_zone.jpg", "Red_Zone_Stickers", red, ",Status: done,", "Developer: red\n");
-	set_status("green_right_zone.jpg", "Green_Zone_Stickers", green, ",Status: done,", "Developer: green\n");
-	set_status("blue_right_zone.jpg", "Blue_Zone_Stickers", blue, ",Status: done,", "Developer: blue\n");
+	set_status("pool_zone.jpg", "pool_Zone_Stickers", pool, ",Status: in pool", ",Developer: none\n");
+	set_status("dev1_left_zone.jpg","dev1_Zone_Stickers", dev1, ",Status: in progress", ",Developer: dev1\n");
+	set_status("dev2_left_zone.jpg", "dev2_Zone_Stickers", dev2, ",Status: in progress,", "Developer: dev2\n");
+	set_status("dev3_left_zone.jpg", "dev3_Zone_Stickers", dev3, ",Status: in progress,", "Developer: dev3\n");
+	set_status("dev1_right_zone.jpg", "dev1_Zone_Stickers", dev1, ",Status: done,", "Developer: dev1\n");
+	set_status("dev2_right_zone.jpg", "dev2_Zone_Stickers", dev2, ",Status: done,", "Developer: dev2\n");
+	set_status("dev3_right_zone.jpg", "dev3_Zone_Stickers", dev3, ",Status: done,", "Developer: dev3\n");
 
 	cvReleaseImage(&image);
 	cvReleaseImage(&src);
